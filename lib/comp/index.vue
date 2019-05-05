@@ -11,7 +11,6 @@
         <line
           v-for="(link, index) in links"
           :key="index"
-          :stroke-width="1"
           :x1="link.source.x"
           :y1="link.source.y"
           :x2="link.target.x"
@@ -22,11 +21,10 @@
         <circle
           v-for="(node, index) in nodes"
           :key="index"
-          :r="5"
-          :fill="node.isDragged ? 'red' : 'blue'"
           :cx="node.x"
           :cy="node.y"
-          :title="node.name"
+          @mouseenter.stop.prevent="onMouseEnter(node, $event)"
+          @mouseleave.stop.prevent="onMouseLeave(node, $event)"
           @mousedown.stop.prevent="onDragStart(node)"
           @touchstart.stop.prevent="onDragStart(node)"
         />
@@ -49,7 +47,7 @@ export default {
 
 svg#couple
   display block
-  margin 0 auto
+  margin 0 auto 2rem
 
   g.links
     stroke #999
@@ -59,5 +57,15 @@ svg#couple
     stroke #fff
     stroke-opacity 0.8
     stroke-width 1.5
+
+    circle
+      r 7
+      fill #9467bd
+      stroke-width 2
+      transition 0.3s ease
+
+      &:hover
+        r 10
+        fill #17becf
 
 </style>

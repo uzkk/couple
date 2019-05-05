@@ -9,7 +9,7 @@ export default {
   data: () => ({
     nodes,
     links,
-    size: 300,
+    size: 320,
     draggedNode: null,
   }),
 
@@ -20,12 +20,25 @@ export default {
   },
 
   created () {
+    this.forceLink = d3
+      .forceLink<Node, Link>(this.links)
+      .id(node => node.id)
+      .distance(40)
+    this.forceManyBody = d3
+      .forceManyBody()
+      .strength(-50)
+    this.forceX = d3
+      .forceX()
+      .strength(0.08)
+    this.forceY = d3
+      .forceY()
+      .strength(0.08)
     this.simulation = d3
       .forceSimulation(this.nodes)
-      .force('link', d3.forceLink<Node, Link>(this.links).id(node => node.id))
-      .force('charge', d3.forceManyBody())
-      .force('x', d3.forceX())
-      .force('y', d3.forceY())
+      .force('link', this.forceLink)
+      .force('charge', this.forceManyBody)
+      .force('x', this.forceX)
+      .force('y', this.forceY)
       .stop()
   },
 
@@ -76,6 +89,16 @@ export default {
       this.draggedNode.fx = null
       this.draggedNode.fy = null
       this.draggedNode = null
+    },
+
+    onMouseEnter (node: Node, event: MouseEvent) {
+      const tooltip = this.$uzkk.coupleTooltip
+      tooltip.title = node.name
+      tooltip.activate(event)
+    },
+
+    onMouseLeave () {
+      this.$uzkk.coupleTooltip.inactivate(300)
     },
   },
 }
