@@ -44,8 +44,6 @@ export default {
 
 </script>
 
-<style lang="stylus" src="../styles/index.styl"></style>
-
 <style lang="stylus">
 
 svg#couple
