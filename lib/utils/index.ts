@@ -1,8 +1,10 @@
 import * as d3 from 'd3-force'
 import { nodes, links, Node, Link } from '../data'
 
-function ensureRange (value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
+function getEventPoint (event: MouseEvent | TouchEvent) {
+  return event.type.startsWith('touch')
+    ? (event as TouchEvent).targetTouches[0]
+    : event as MouseEvent
 }
 
 export default {
@@ -10,6 +12,7 @@ export default {
     nodes,
     links,
     size: 320,
+    dragStartEvent: null,
     draggedNode: null,
   }),
 
@@ -20,19 +23,25 @@ export default {
   },
 
   created () {
+    this.DRAGGABLE_RADIUS = this.size / 2 - 10
+
     this.forceLink = d3
       .forceLink<Node, Link>(this.links)
       .id(node => node.id)
-      .distance(40)
+      .distance(35)
+
     this.forceManyBody = d3
       .forceManyBody()
-      .strength(-50)
+      .strength(-40)
+
     this.forceX = d3
       .forceX()
-      .strength(0.08)
+      .strength(0.07)
+
     this.forceY = d3
       .forceY()
-      .strength(0.08)
+      .strength(0.07)
+
     this.simulation = d3
       .forceSimulation(this.nodes)
       .force('link', this.forceLink)
@@ -45,50 +54,57 @@ export default {
   mounted () {
     this.simulation.restart()
 
-    addEventListener('mousemove', this.onMouseMove)
-    addEventListener('touchmove', this.onTouchMove)
+    addEventListener('mousemove', this.onDragMove)
+    addEventListener('touchmove', this.onDragMove)
     addEventListener('mouseup', this.onDragEnd)
     addEventListener('touchend', this.onDragEnd)
   },
 
   destroyed () {
-    removeEventListener('mousemove', this.onMouseMove)
-    removeEventListener('touchmove', this.onTouchMove)
+    removeEventListener('mousemove', this.onDragMove)
+    removeEventListener('touchmove', this.onDragMove)
     removeEventListener('mouseup', this.onDragEnd)
     removeEventListener('touchend', this.onDragEnd)
   },
 
   methods: {
-    onDragStart (node: Node) {
+    onDragStart (node: Node, event: MouseEvent | TouchEvent) {
       this.draggedNode = node
+      this.dragStartEvent = event
       this.simulation.alphaTarget(0.3).restart()
+      const point = getEventPoint(event)
       node.fx = node.x
       node.fy = node.y
+      node.lastX = node.x - point.clientX
+      node.lastY = node.y - point.clientY
     },
 
-    onMouseMove (event: MouseEvent) {
-      if (!this.draggedNode) return
-      this.updatePosition(event)
+    onDragMove (event: MouseEvent | TouchEvent) {
+      const node = this.draggedNode
+      if (!node) return
+      const point = getEventPoint(event)
+      node.fx = point.clientX + node.lastX
+      node.fy = point.clientY + node.lastY
+      const dist2 = node.fx ** 2 + node.fy ** 2
+      if (dist2 > this.DRAGGABLE_RADIUS ** 2) {
+        const scale = this.DRAGGABLE_RADIUS / Math.sqrt(dist2)
+        node.fx *= scale
+        node.fy *= scale
+      }
     },
 
-    onTouchMove (event: TouchEvent) {
-      const touch = event.targetTouches[0]
-      if (!this.draggedNode || !touch) return
-      this.updatePosition(touch)
-    },
-
-    updatePosition (e: MouseEvent | Touch) {
-      const { x, y } = this.$refs.svg.getBoundingClientRect()
-      this.draggedNode.fx = ensureRange(e.clientX - x, 0, this.size) - this.size / 2
-      this.draggedNode.fy = ensureRange(e.clientY - y, 0, this.size) - this.size / 2
-    },
-
-    onDragEnd () {
+    onDragEnd (event: MouseEvent | TouchEvent) {
       if (!this.draggedNode) return
       this.simulation.alphaTarget(0)
       this.draggedNode.fx = null
       this.draggedNode.fy = null
       this.draggedNode = null
+    },
+
+    setFocusedNodes (...nodes: Node[]) {
+      this.nodes.forEach((node) => {
+        node.focused = !!nodes.find(({ id }) => id === node.id)
+      })
     },
 
     onMouseEnterNode (node: Node, event: MouseEvent) {

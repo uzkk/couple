@@ -4,6 +4,9 @@ interface Node extends SimulationNodeDatum {
   id: string
   name: string
   active: boolean
+  focused: boolean
+  lastX: number
+  lastY: number
 }
 
 interface Link extends SimulationLinkDatum<Node> {

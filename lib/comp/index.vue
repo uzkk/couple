@@ -16,7 +16,7 @@
           :x2="link.target.x"
           :y2="link.target.y"
           @mouseenter.stop.prevent="onMouseEnterLink(link, $event)"
-          @mouseleave.stop.prevent="onMouseLeaveLink(link)"
+          @mouseleave.stop.prevent="onMouseLeaveLink(link, $event)"
         />
       </g>
       <g class="nodes">
@@ -25,11 +25,11 @@
           :key="index"
           :cx="node.x"
           :cy="node.y"
-          :class="{ active: node.active }"
+          :class="{ active: node.active || node.focused }"
           @mouseenter.stop.prevent="onMouseEnterNode(node, $event)"
-          @mouseleave.stop.prevent="onMouseLeaveNode(node)"
-          @mousedown.stop.prevent="onDragStart(node)"
-          @touchstart.stop.prevent="onDragStart(node)"
+          @mouseleave.stop.prevent="onMouseLeaveNode(node, $event)"
+          @mousedown.stop.prevent="onDragStart(node, $event)"
+          @touchstart.stop.prevent="onDragStart(node, $event)"
         />
       </g>
     </svg>
@@ -68,7 +68,7 @@ svg#couple
     stroke-width 1.5
 
     circle
-      r 8
+      r 7
       fill #9467bd
       transition fill 0.3s ease, r 0.3s ease
       &.active
