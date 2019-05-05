@@ -1,0 +1,43 @@
+{
+  "name": "@uzkk/couple",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "author": "Shigma <1700011071@pku.edu.cn>",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uzkk/couple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/uzkk/couple/issues"
+  },
+  "homepage": "https://vp.uzkk.net/couple/",
+  "scripts": {
+    "build": "vuepress build docs",
+    "dev": "vuepress dev docs",
+    "serve": "vuepress serve docs",
+    "lint": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@types/d3": "^5.7.2",
+    "@uzkk/shared-assets": "^0.0.5",
+    "@uzkk/not-found": "^1.0.1",
+    "eslint": "^5.15.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^5.2.2",
+    "vuepress": "^1.0.0-alpha.47",
+    "vuepress-theme-uzkk": "^1.0.0-alpha.34"
+  },
+  "dependencies": {
+    "typescript": "^3.4.5",
+    "ts-loader": "^5.4.5",
+    "d3-force": "^2.0.1"
+  }
+}
