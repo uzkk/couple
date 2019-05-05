@@ -3,12 +3,13 @@ import { SimulationNodeDatum, SimulationLinkDatum } from 'd3'
 interface Node extends SimulationNodeDatum {
   id: string
   name: string
-  isDragged: boolean
+  active: boolean
 }
 
 interface Link extends SimulationLinkDatum<Node> {
-  source: string
-  target: string
+  name: string
+  source: Node
+  target: Node
 }
 
 export const nodes: Node[]

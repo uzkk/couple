@@ -91,13 +91,32 @@ export default {
       this.draggedNode = null
     },
 
-    onMouseEnter (node: Node, event: MouseEvent) {
+    onMouseEnterNode (node: Node, event: MouseEvent) {
+      node.active = true
+      this.setTooltip(node.name, event)
+    },
+
+    onMouseEnterLink (link: Link, event: MouseEvent) {
+      link.source.active = true
+      link.target.active = true
+      this.setTooltip(link.name, event)
+    },
+
+    setTooltip (title: string, event: MouseEvent) {
       const tooltip = this.$uzkk.coupleTooltip
-      tooltip.title = node.name
+      if (!tooltip || !title) return
+      tooltip.title = title
       tooltip.activate(event)
     },
 
-    onMouseLeave () {
+    onMouseLeaveNode (node: Node) {
+      node.active = false
+      this.$uzkk.coupleTooltip.inactivate(300)
+    },
+
+    onMouseLeaveLink (link: Link) {
+      link.source.active = false
+      link.target.active = false
       this.$uzkk.coupleTooltip.inactivate(300)
     },
   },
