@@ -27,7 +27,8 @@
           :cx="node.x"
           :cy="node.y"
           :title="node.name"
-          @mousedown.stop.prevent="onMouseDown(node)"
+          @mousedown.stop.prevent="onDragStart(node)"
+          @touchstart.stop.prevent="onDragStart(node)"
         />
       </g>
     </svg>
