@@ -62,7 +62,7 @@ svg#couple
       r 7
       fill #9467bd
       stroke-width 2
-      transition 0.3s ease
+      transition fill 0.3s ease, r 0.3s ease
 
       &:hover
         r 10
