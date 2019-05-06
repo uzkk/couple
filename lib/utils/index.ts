@@ -35,15 +35,15 @@ export default {
       .distance(35)
 
     this.forceManyBody = d3
-      .forceManyBody()
+      .forceManyBody<Node>()
       .strength(-40)
 
     this.forceX = d3
-      .forceX()
+      .forceX<Node>()
       .strength(0.07)
 
     this.forceY = d3
-      .forceY()
+      .forceY<Node>()
       .strength(0.07)
 
     this.simulation = d3
