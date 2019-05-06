@@ -10,7 +10,7 @@ function getEventPoint (event: MouseEvent | TouchEvent) {
     : event as MouseEvent
 }
 
-const MIN_TIME = 100
+const MIN_TIME = 200
 
 export default {
   data: () => ({
