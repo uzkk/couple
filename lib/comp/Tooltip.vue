@@ -24,6 +24,7 @@ export default {
 
   computed: {
     tooltipStyle () {
+      if (!this.left || !this.top) return {}
       return {
         left: this.left + 'px',
         top: this.top + 'px',
@@ -44,11 +45,14 @@ export default {
       this.top = event.clientY - y
     },
 
-    inactivate (delay) {
+    inactivate (delay = 0, clear = false) {
       this.inactive = true
       setTimeout(() => {
         if (!this.inactive) return
         this.active = false
+        if (!clear) return
+        this.left = null
+        this.top = null
       }, delay)
     },
   },

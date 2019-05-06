@@ -7,6 +7,7 @@ interface Node extends SimulationNodeDatum {
   focused: boolean
   lastX: number
   lastY: number
+  timeStamp: number
 }
 
 interface Link extends SimulationLinkDatum<Node> {

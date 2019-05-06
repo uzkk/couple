@@ -3,16 +3,20 @@ import { nodes, links, Node, Link } from '../data'
 
 function getEventPoint (event: MouseEvent | TouchEvent) {
   return event.type.startsWith('touch')
-    ? (event as TouchEvent).targetTouches[0]
+    ? [
+      ...(event as TouchEvent).targetTouches,
+      ...(event as TouchEvent).changedTouches,
+    ][0]
     : event as MouseEvent
 }
+
+const MIN_TIME = 100
 
 export default {
   data: () => ({
     nodes,
     links,
     size: 320,
-    dragStartEvent: null,
     draggedNode: null,
   }),
 
@@ -70,35 +74,52 @@ export default {
   methods: {
     onDragStart (node: Node, event: MouseEvent | TouchEvent) {
       this.draggedNode = node
-      this.dragStartEvent = event
-      this.simulation.alphaTarget(0.3).restart()
-      const point = getEventPoint(event)
-      node.fx = node.x
-      node.fy = node.y
-      node.lastX = node.x - point.clientX
-      node.lastY = node.y - point.clientY
+      node.active = true
+      node.timeStamp = event.timeStamp
     },
 
     onDragMove (event: MouseEvent | TouchEvent) {
       const node = this.draggedNode
       if (!node) return
-      const point = getEventPoint(event)
-      node.fx = point.clientX + node.lastX
-      node.fy = point.clientY + node.lastY
-      const dist2 = node.fx ** 2 + node.fy ** 2
-      if (dist2 > this.DRAGGABLE_RADIUS ** 2) {
-        const scale = this.DRAGGABLE_RADIUS / Math.sqrt(dist2)
-        node.fx *= scale
-        node.fy *= scale
+      if (!node.timeStamp) {
+        const point = getEventPoint(event)
+        node.fx = point.clientX + node.lastX
+        node.fy = point.clientY + node.lastY
+        const dist2 = node.fx ** 2 + node.fy ** 2
+        if (dist2 > this.DRAGGABLE_RADIUS ** 2) {
+          const scale = this.DRAGGABLE_RADIUS / Math.sqrt(dist2)
+          node.fx *= scale
+          node.fy *= scale
+        }
+      } else if (event.timeStamp - node.timeStamp > MIN_TIME) {
+        node.timeStamp = null
+        this.simulation.alphaTarget(0.3).restart()
+        const point = getEventPoint(event)
+        node.fx = node.x
+        node.fy = node.y
+        node.lastX = node.x - point.clientX
+        node.lastY = node.y - point.clientY
       }
     },
 
     onDragEnd (event: MouseEvent | TouchEvent) {
-      if (!this.draggedNode) return
-      this.simulation.alphaTarget(0)
-      this.draggedNode.fx = null
-      this.draggedNode.fy = null
+      const node = this.draggedNode
+      if (!node) return
+      if (!node.timeStamp) {
+        this.simulation.alphaTarget(0)
+        this.draggedNode.fx = null
+        this.draggedNode.fy = null
+      } else {
+        this.setFocusedNodes(node)
+        this.setTooltip(node.name, event)
+      }
+      node.active = false
       this.draggedNode = null
+    },
+
+    onClick () {
+      this.setFocusedNodes()
+      this.$uzkk.coupleTooltip.inactivate(0, true)
     },
 
     setFocusedNodes (...nodes: Node[]) {
@@ -118,11 +139,11 @@ export default {
       this.setTooltip(link.name, event)
     },
 
-    setTooltip (title: string, event: MouseEvent) {
+    setTooltip (title: string, event: MouseEvent | TouchEvent) {
       const tooltip = this.$uzkk.coupleTooltip
       if (!tooltip || !title) return
       tooltip.title = title
-      tooltip.activate(event)
+      tooltip.activate(getEventPoint(event))
     },
 
     onMouseLeaveNode (node: Node) {

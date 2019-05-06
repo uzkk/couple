@@ -6,6 +6,7 @@
       :width="size"
       :height="size"
       :viewBox="viewBox"
+      @click.stop.prevent="onClick"
     >
       <g class="links">
         <line
@@ -55,12 +56,12 @@ svg#couple
   g.links
     stroke #999
     stroke-opacity 0.6
-    stroke-width 2
+    stroke-width 3
 
     line
       transition stroke-width 0.3s ease
       &:hover
-        stroke-width 3
+        stroke-width 5
 
   g.nodes
     stroke #fff
