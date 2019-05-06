@@ -24,7 +24,11 @@ export default {
 
   computed: {
     tooltipStyle () {
-      if (!this.left || !this.top) return {}
+      if (!this.left || !this.top) {
+        return {
+          display: 'none',
+        }
+      }
       return {
         left: this.left + 'px',
         top: this.top + 'px',
