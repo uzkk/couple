@@ -3,9 +3,8 @@
     class="couple-tooltip"
     :class="{ active }"
     :style="tooltipStyle"
-  >
-    {{ title }}
-  </div>
+    v-html="title"
+  />
 </template>
 
 <script>

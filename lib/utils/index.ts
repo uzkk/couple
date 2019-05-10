@@ -136,7 +136,9 @@ export default {
     onMouseEnterLink (link: Link, event: MouseEvent) {
       link.source.active = true
       link.target.active = true
-      this.setTooltip(link.name, event)
+      let text = `${link.source.name} & ${link.target.name}`
+      if (link.name) text = `${link.name}<br/>${text}`
+      this.setTooltip(text, event)
     },
 
     setTooltip (title: string, event: MouseEvent | TouchEvent) {
